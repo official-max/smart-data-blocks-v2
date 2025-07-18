@@ -21,9 +21,9 @@ class SDB_Metabox
     {
         include SDB_PLUGIN_DIR . 'includes/add-metabox.php';
     }
-
+    
     public function save_meta($post_id)
     {
-        // TODO: Save logic for custom fields
+        include SDB_PLUGIN_DIR . 'includes/save-metabox.php';
     }
 }

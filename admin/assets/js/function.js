@@ -211,15 +211,14 @@ function createSubFieldRow(parentRow, subIndex) {
   row.appendChild(makeIconButton('', 'sdb-remove-sub-field button-danger', 'dashicons-trash'));
 
   // hidden order input
-  const orderInput = document.createElement('input');
-  orderInput.type = 'hidden';
-  orderInput.name = `${path}[field_order]`;
-  orderInput.value = subIndex;
-  row.appendChild(orderInput);
+  // const orderInput = document.createElement('input');
+  // orderInput.type = 'hidden';
+  // orderInput.name = `${path}[field_order]`;
+  // orderInput.value = subIndex;
+  // row.appendChild(orderInput);
 
   return row;
 }
-
 
 /*
 * Update field order value update
@@ -233,7 +232,6 @@ function updateFieldOrder(fieldCreator) {
   });
 }
 
-
 // Drag-&-drop inside every repeater
 function initSubFieldSortable(listEl) {
   Sortable.create(listEl, {
@@ -246,7 +244,6 @@ function initSubFieldSortable(listEl) {
   });
 }
 
-
 /* update hidden [field_order] inputs inside this list */
 function updateSubFieldOrders(listEl) {
   [...listEl.querySelectorAll('.sdb-sub-field-row')].forEach((row, idx) => {
@@ -254,13 +251,6 @@ function updateSubFieldOrders(listEl) {
     if (input) input.value = idx;
   });
 }
-
-
-
-
-
-
-
 
 // Create location Rule
 function createLocationRule(index) {

@@ -5,7 +5,6 @@ if (!defined('ABSPATH')) exit;
 global $wpdb;
 $table_fields = $wpdb->prefix . 'sdb_fields_v2';
 
-
 // 🔴 Delete Field
 if (isset($_GET['delete_field']) && current_user_can('manage_options')) {
     $field_id = intval($_GET['delete_field']);
@@ -23,8 +22,6 @@ if (isset($_POST['sdb_field_nonce']) && wp_verify_nonce($_POST['sdb_field_nonce'
 
     if (isset($_POST['fields']) && is_array($_POST['fields'])) {
         foreach ($_POST['fields'] as $field) {
-
-
             // Basic field values
             $field_id       = intval($field['field_id'] ?? 0);
             $field_label = sanitize_text_field($field['label'] ?? '');

@@ -11,11 +11,11 @@ if (!defined('ABSPATH')) {
 function sdb_v2_create_tables()
 {
     global $wpdb;
-    $charset_collate = $wpdb->get_charset_collate(); // 📌 Character set from WordPress
-    $table_groups = $wpdb->prefix . 'sdb_field_groups_v2'; // 🧱 Field groups table
-    $table_fields = $wpdb->prefix . 'sdb_fields_v2';       // 📦 Fields table
+    $charset_collate = $wpdb->get_charset_collate();
+    $table_groups = $wpdb->prefix . 'sdb_field_groups_v2';
+    $table_fields = $wpdb->prefix . 'sdb_fields_v2';
 
-    // 📄 SQL to create both tables
+    // Step 1: Create tables without foreign key
     $sql = "
         CREATE TABLE $table_groups (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -37,17 +37,30 @@ function sdb_v2_create_tables()
             field_order INT NOT NULL DEFAULT 0,
             field_settings LONGTEXT DEFAULT NULL,
             PRIMARY KEY (id),
-            UNIQUE KEY unique_field_per_group (group_id, field_name),
-            CONSTRAINT fk_group_id FOREIGN KEY (group_id)
-                REFERENCES $table_groups(id)
-                ON DELETE CASCADE
+            UNIQUE KEY unique_field_per_group (group_id, field_name)
         ) ENGINE=InnoDB $charset_collate;
-        ";
+    ";
 
-
-    // 🔧 Include dbDelta helper
+    // Step 2: Run dbDelta to create tables
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-    // 🔄 Run SQL and update if table already exists
     dbDelta($sql);
+
+    // Step 3: Add foreign key constraint safely (if not exists)
+    $fk_exists = $wpdb->get_var("
+        SELECT CONSTRAINT_NAME 
+        FROM information_schema.KEY_COLUMN_USAGE 
+        WHERE TABLE_NAME = '{$wpdb->prefix}sdb_fields_v2' 
+          AND CONSTRAINT_NAME = 'fk_group_id'
+          AND TABLE_SCHEMA = DATABASE()
+    ");
+
+    if (!$fk_exists) {
+        $wpdb->query("
+            ALTER TABLE $table_fields
+            ADD CONSTRAINT fk_group_id
+            FOREIGN KEY (group_id)
+            REFERENCES $table_groups(id)
+            ON DELETE CASCADE
+        ");
+    }
 }

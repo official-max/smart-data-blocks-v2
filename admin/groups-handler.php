@@ -26,8 +26,6 @@ if (
     $title    = sanitize_text_field($_POST['group_title']);
     $group_id = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
 
-
-
     // $key_slug = sanitize_title($_POST['group_key']); // optional
     // ✅ Auto-generate slug if empty
     $base_slug = sanitize_title($title);

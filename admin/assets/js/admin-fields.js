@@ -14,21 +14,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ── Drag-drop ordering (top-level) */
-    if (fieldCreator && window.Sortable) {
-        Sortable.create(fieldCreator, {
-            animation: 150,
-            handle: '.sdb-field-row', // optional: click-drag whole row
-            ghostClass: 'sortable-ghost',
-            onEnd: () => {
-                updateFieldOrder(fieldCreator);
-            }
-        });
-    }
+    // if (fieldCreator && window.Sortable) {
+    //     Sortable.create(fieldCreator, {
+    //         animation: 150,
+    //         handle: '.sdb-field-row', // optional: click-drag whole row
+    //         ghostClass: 'sortable-ghost',
+    //         onEnd: () => {
+    //             updateFieldOrder(fieldCreator);
+    //         }
+    //     });
+    // }
 
     // ----------------------------------------------
     // 🧲 Drag-drop for sub-fields (inside repeaters)
     // ----------------------------------------------
-    document.querySelectorAll('.sdb-sub-fields-list').forEach(el => initSubFieldSortable(el));
+    // document.querySelectorAll('.sdb-sub-fields-list').forEach(el => initSubFieldSortable(el));
 
 
 

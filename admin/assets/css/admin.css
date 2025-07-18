@@ -36,6 +36,8 @@
     flex-wrap: wrap;
     gap: 16px;
     position: relative;
+    /* align-items: center; */
+    flex-direction: column;
 }
 
 .sdb-field-row:hover,
@@ -91,7 +93,8 @@
     border-radius: 4px;
     background: #fff;
     transition: border 0.2s ease;
-    flex: 1 1 220px;
+    /* flex: 1 1 220px; */
+    flex: 1;
     min-width: 180px;
 }
 

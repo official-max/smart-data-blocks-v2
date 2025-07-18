@@ -169,8 +169,6 @@ function sdb_get_location_param_options($param = 'all')
     return $results;
 }
 
-
-
 function sdb_format_location_value($location_json)
 {
     $locations = json_decode($location_json, true);
@@ -275,19 +273,14 @@ function sdb_format_location_value($location_json)
     return implode('<br>', $output);
 }
 
-
-
 /**
  * Displays all field groups
  */
-
 function sdb_get_all_groups_field($groups, $per_page = 20, $current_page = 1, $total_items = 0)
 {
     ob_start();
 ?>
-
     <hr class="wp-header-end">
-
     <div class="container">
         <table class="wp-list-table widefat fixed striped">
             <thead>
@@ -370,12 +363,9 @@ function sdb_get_all_groups_field($groups, $per_page = 20, $current_page = 1, $t
             </div>
         <?php endif; ?>
     </div>
-
-
 <?php
     return ob_get_clean();
 }
-
 
 /**
  * Displays all fields of a group in a table format // I think not use ----
@@ -444,7 +434,6 @@ function sdb_get_all_fields($fields)
     return ob_get_clean();
 }
 
-
 /**
  * Get field group(s).
  * - Pass ID → returns single group
@@ -488,153 +477,9 @@ function sdb_get_existing_fields($group_id)
     );
 }
 
-
 /**
  * Renders the field creator form
  */
-/*
-function sdb_render_field_creator($group_id, $fields = [])
-{
-    ob_start();
-?>
-    <div class="sdb-field-creator">
-        <?php if (!empty($fields)) : ?>
-            <?php foreach ($fields as $index => $field) : ?>
-                <div class="sdb-field-row" data-index="<?= $index; ?>" data-group-id="<?= $group_id; ?>">
-                    <input type="hidden" name="fields[<?= $index ?>][field_id]" value="<?= esc_attr($field->id); ?>">
-
-                    <div>
-                        <input type="text"
-                            name="fields[<?= $index ?>][field_label]"
-                            value="<?= esc_attr($field->field_label); ?>"
-                            placeholder="Field Label"
-                            required>
-                    </div>
-
-                    <div>
-                        <input type="text"
-                            name="fields[<?= $index ?>][field_name]"
-                            value="<?= esc_attr($field->field_name); ?>"
-                            placeholder="Field Name"
-                            required>
-                    </div>
-
-                    <div>
-                        <select name="fields[<?= $index ?>][field_type]" required>
-                            <option value="text" <?php selected($field->field_type, 'text'); ?>>Text</option>
-                            <option value="textarea" <?php selected($field->field_type, 'textarea'); ?>>Textarea</option>
-                            <option value="image" <?php selected($field->field_type, 'image'); ?>>Image</option>
-                            <option value="gallery" <?php selected($field->field_type, 'gallery'); ?>>Gallery</option>
-                            <option value="editor" <?php selected($field->field_type, 'editor'); ?>>Editor</option>
-                            <option value="repeater" <?php selected($field->field_type, 'repeater'); ?>>Repeater</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <a class="button button-danger"
-                            href="<?php echo esc_url(admin_url('admin.php?page=sdb_manage_fields&group_id=' . intval($group_id) . '&delete_field=' . intval($field->id))); ?>"
-                            onclick="return confirm('Are you sure you want to delete this field?');">
-                            <span class="dashicons dashicons-trash"></span> Delete
-                        </a>
-                    </div>
-
-                    <?php if ($field->field_type === 'repeater') :
-                        $field_settings = json_decode($field->field_settings, true);
-                        $sub_fields = $field_settings['sub_fields'] ?? [];
-                    ?>
-                        <div class="sdb-repeater-settings" data-path="[0,2]">
-                            <div class="sdb-repeater-header">
-                                <h4><span class="dashicons dashicons-admin-generic"></span> Repeater Settings</h4>
-                            </div>
-
-                            <div class="sdb-repeater-options">
-                                <div class="sdb-option-row">
-                                    <label>Minimum Rows:</label>
-                                    <input type="number" name="fields[<?= $index ?>][repeater_min]"
-                                        value="<?= esc_attr($field_settings['min_rows'] ?? 1) ?>" min="1">
-                                </div>
-
-                                <div class="sdb-option-row">
-                                    <label>Maximum Rows:</label>
-                                    <input type="number" name="fields[<?= $index ?>][repeater_max]"
-                                        value="<?= esc_attr($field_settings['max_rows'] ?? 10) ?>" min="1">
-                                </div>
-                            </div>
-
-                            <div class="sdb-sub-fields-container" data-depth="0">
-                                <h5>Sub Fields</h5>
-                                <div class="sdb-sub-fields-list">
-                                    <?php foreach ($sub_fields as $sub_index => $sub) : ?>
-                                        <div class="sdb-sub-field sdb-sub-field-row" data-parent-index="<?php echo $index; ?>">
-                                            <input type="text"
-                                                name="fields[<?= $index ?>][repeater_sub_fields][<?= $sub_index ?>][label]"
-                                                value="<?= esc_attr($sub['label'] ?? '') ?>"
-                                                placeholder="Label">
-
-                                            <input type="text"
-                                                name="fields[<?= $index ?>][repeater_sub_fields][<?= $sub_index ?>][name]"
-                                                value="<?= esc_attr($sub['name'] ?? '') ?>"
-                                                placeholder="Name">
-
-                                            <select name="fields[<?= $index ?>][repeater_sub_fields][<?= $sub_index ?>][type]">
-                                                <option value="text" <?php selected($sub['type'] ?? '', 'text'); ?>>Text</option>
-                                                <option value="textarea" <?php selected($sub['type'] ?? '', 'textarea'); ?>>Textarea</option>
-                                                <option value="image" <?php selected($sub['type'] ?? '', 'image'); ?>>Image</option>
-                                                <option value="editor" <?php selected($sub['type'] ?? '', 'editor'); ?>>Editor</option>
-                                                <option value="gallery" <?php selected($sub['type'] ?? '', 'gallery'); ?>>Gallery</option>
-                                                <option value="repeater" <?php selected($sub['type'] ?? '', 'repeater'); ?>>Repeater</option>
-                                            </select>
-
-                                            <button type="button" class="button sdb-remove-sub-field">
-                                                <span class="dashicons dashicons-trash"></span>
-                                            </button>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-
-                                <button type="button" class="button button-primary sdb-add-sub-field">
-                                    <span class="dashicons dashicons-plus"></span> Add Sub Field
-                                </button>
-                            </div>
-
-                        </div>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-        <?php else : ?>
-            <!-- Default empty field -->
-            <div class="sdb-field-row">
-                <div>
-                    <input type="text" name="fields[0][field_label]" placeholder="Field Label" required>
-                </div>
-
-                <div>
-                    <input type="text" name="fields[0][field_name]" placeholder="Field Name" required>
-                </div>
-
-                <div>
-                    <select name="fields[0][field_type]" required>
-                        <option value="text">Text</option>
-                        <option value="textarea">Textarea</option>
-                        <option value="image">Image</option>
-                        <option value="repeater">Repeater</option>
-                    </select>
-                </div>
-
-                <div>
-                    <button type="button" class="button remove-field">
-                        <span class="dashicons dashicons-trash"></span> Remove
-                    </button>
-                </div>
-            </div>
-        <?php endif; ?>
-    </div>
-<?php
-    return ob_get_clean();
-}
-    */
-
-
 function sdb_render_field_creator($group_id, $fields = [])
 {
     ob_start();
@@ -650,7 +495,6 @@ function sdb_render_field_creator($group_id, $fields = [])
                     'type' => $field_obj->field_type,
                     'settings' => json_decode($field_obj->field_settings ?? '{}', true),
                 ];
-
                 echo sdb_render_field($field_array, "fields[{$index}]", $index, false, 0, $group_id);
             endforeach; ?>
 
@@ -662,12 +506,9 @@ function sdb_render_field_creator($group_id, $fields = [])
     return ob_get_clean();
 }
 
-
-
 function sdb_render_field($field, $name_prefix, $index = 0, $is_sub = false, $depth = 0, $group_id = 0)
 {
     ob_start();
-
     $field_type     = $field['type'] ?? 'text';
     $field_label    = $field['label'] ?? '';
     $field_name     = $field['name'] ?? '';
@@ -751,40 +592,6 @@ function sdb_render_field($field, $name_prefix, $index = 0, $is_sub = false, $de
     return ob_get_clean();
 }
 
-
-
-
-/**
- * Recursive sub-field processor for nested repeater fields
- */
-/*
-function sdb_process_sub_fields($sub_fields_raw)
-{
-    $sub_fields = [];
-
-    foreach ($sub_fields_raw as $sub) {
-        $sanitized = [
-            'label' => sanitize_text_field($sub['label'] ?? ''),
-            'name'  => sanitize_title($sub['name'] ?? ''),
-            'type'  => sanitize_text_field($sub['type'] ?? 'text'),
-        ];
-
-        // If this sub-field is a repeater, process its settings and sub-sub-fields
-        if ($sanitized['type'] === 'repeater' && isset($sub['settings']['sub_fields'])) {
-            $sanitized['settings'] = [
-                'min_rows' => intval($sub['settings']['min_rows'] ?? 1),
-                'max_rows' => intval($sub['settings']['max_rows'] ?? 10),
-                'sub_fields' => sdb_process_sub_fields($sub['settings']['sub_fields']),
-                
-            ];
-        }
-
-        $sub_fields[] = $sanitized;
-    }
-
-    return $sub_fields;
-}*/
-
 /**
  * Recursive sub-field processor for nested repeater fields
  * Adds `field_order` based on the current DOM / POST order.
@@ -823,23 +630,16 @@ function sdb_process_sub_fields($sub_fields_raw)
 
 
 
-
 /**
- * Ensure field_name is unique within a group.
- *
- * @param string $base_name  Sanitized slug from label.
- * @param int    $group_id   Current group ID.
- * @param int    $exclude_id Current field ID (0 for new).
- * @return string Unique slug (my_field, my_field_2, my_field_3 …)
+ * Group ke andar unique field name banata hai.
+ * Agar same name mil gaya toh _2, _3 jod ke unique banata hai.
  */
 function sdb_get_unique_field_name($base_name, $group_id, $exclude_id = 0)
 {
     global $wpdb;
     $table_fields = $wpdb->prefix . 'sdb_fields_v2';
-
     $name = $base_name;
     $suffix = 2;
-
     // Loop until we find a name that doesn’t exist (or exists only for the same $exclude_id)
     while (
         $wpdb->get_var(
@@ -855,11 +655,8 @@ function sdb_get_unique_field_name($base_name, $group_id, $exclude_id = 0)
         $name = $base_name . '_' . $suffix;
         $suffix++;
     }
-
     return $name;
 }
-
-
 
 /**
  * Unique‑ify a name inside a flat array of names [for reapter]
@@ -885,7 +682,6 @@ function sdb_get_all_field_groups()
 {
     global $wpdb;
     $table = $wpdb->prefix . 'sdb_field_groups_v2';
-
     return $wpdb->get_results("SELECT * FROM $table ORDER BY group_order ASC");
 }
 
@@ -908,6 +704,7 @@ function sdb_show_metabox($post, $rules)
         }
 
         // Figure out the actual property of current post/user
+        $actual = null;
         switch ($type) {
             case 'post_type':
                 $actual = $post->post_type;
@@ -953,20 +750,4 @@ function sdb_show_metabox($post, $rules)
     }
 
     return true; // sab rules pass → show metabox
-}
-
-
-
-function sdb_render_group_metabox($group, $post)
-{
-    $fields = sdb_get_existing_fields($group->id);
-
-    echo '<div class="sdb-fields">';
-    foreach ($fields as $field) {
-        // Render field input based on type
-        // Example:
-        echo '<p><label>' . esc_html($field->field_label) . '</label>';
-        echo '<input type="text" name="sdb_fields[' . esc_attr($field->id) . ']" value="' . esc_attr(get_post_meta($post->ID, 'sdb_field_' . $field->id, true)) . '"></p>';
-    }
-    echo '</div>';
 }
